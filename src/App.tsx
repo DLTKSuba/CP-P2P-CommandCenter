@@ -19,6 +19,7 @@ import {
 } from './components/harmony/ProjectFilterControl'
 import { Icon } from './components/harmony/Icon'
 import { DelaPanelContent } from './components/harmony/DelaPanelContent'
+import { useTasksNeedingReviewCount } from './components/harmony/DelaChatHistory'
 import type { LeftSidebarSection } from './components/harmony/LeftSidebar'
 import { ComponentGalleryPage } from './pages/ComponentGalleryPage'
 import { ComponentDemoPage } from './pages/ComponentDemoPage'
@@ -1314,6 +1315,16 @@ function HomeShell() {
   const [activeTabId, setActiveTabId] = useState<string>('requisitions')
   const [delaPrompt, setDelaPrompt] = useState<{ id: number; text: string } | null>(null)
   const [openDelaRequest, setOpenDelaRequest] = useState(0)
+  const delaReviewCount = useTasksNeedingReviewCount()
+  const rightRailSections = useMemo(
+    () =>
+      COMMAND_CENTER_RIGHT_RAIL.map((section) => ({
+        items: section.items.map((item) =>
+          item.label === 'Dela AI' ? { ...item, badgeCount: delaReviewCount } : item
+        ),
+      })),
+    [delaReviewCount]
+  )
   const [detailTabs, setDetailTabs] = useState<{ id: string; label: string }[]>([])
   const [refreshTick, setRefreshTick] = useState(0)
   const [selectedPrId, setSelectedPrId] = useState<string | null>(null)
@@ -1400,7 +1411,7 @@ function HomeShell() {
       companyName="Company name (system/environment name)"
       leftSidebarSections={COSTPOINT_LEFT_RAIL}
       floatingNavActions={floatingNavActions}
-      rightSidebarSections={COMMAND_CENTER_RIGHT_RAIL}
+      rightSidebarSections={rightRailSections}
       rightSidebarAlign="content"
       rightSidebarTopAnchor='[aria-label="Refresh"]'
       rightShellPanelVariant="dela"

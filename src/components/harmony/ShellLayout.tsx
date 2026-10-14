@@ -160,14 +160,18 @@ export function ShellLayout({
   })
 
   const { handleItemActivate: activateRightRailItem } = rightRailPanel
+  /* Read at request time so rail updates (e.g. badge counts) don't re-trigger the open. */
+  const openDelaTargetRef = useRef({ sections: rightSidebarSections, activate: activateRightRailItem })
+  openDelaTargetRef.current = { sections: rightSidebarSections, activate: activateRightRailItem }
   useEffect(() => {
-    if (!rightShellPanelOpenDelaRequest || !rightSidebarSections) return
-    for (const [sectionIndex, section] of rightSidebarSections.entries()) {
+    const { sections, activate } = openDelaTargetRef.current
+    if (!rightShellPanelOpenDelaRequest || !sections) return
+    for (const [sectionIndex, section] of sections.entries()) {
       const itemIndex = section.items.findIndex(
         (item) => (item.panelTitle ?? item.label) === 'Dela AI'
       )
       if (itemIndex === -1) continue
-      activateRightRailItem({
+      activate({
         item: section.items[itemIndex],
         sectionIndex,
         itemIndex,
@@ -175,7 +179,7 @@ export function ShellLayout({
       })
       return
     }
-  }, [rightShellPanelOpenDelaRequest, rightSidebarSections, activateRightRailItem])
+  }, [rightShellPanelOpenDelaRequest])
 
   // The rail and panel are fixed to the viewport, so content edges have to be measured.
   useEffect(() => {

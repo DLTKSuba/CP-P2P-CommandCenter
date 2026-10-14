@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { forwardRef } from 'react'
 import type { KeyboardEvent, MouseEvent, RefObject } from 'react'
 import { Icon } from './Icon'
+import { NotificationBadge } from './NotificationBadge'
 import type { RightSidebarItemActivateDetail } from './useRightSidebarPanel'
 import './RightSidebar.css'
 
@@ -20,6 +21,8 @@ export interface RightSidebarNavItem {
   panelIcon?: string
   panelContentId?: string
   useGradientHeader?: boolean
+  /** Items needing the user's attention; shows a count badge on the icon when above zero. */
+  badgeCount?: number
 }
 
 export interface RightSidebarSection {
@@ -127,6 +130,9 @@ export const RightSidebar = forwardRef<HTMLElement, RightSidebarProps>(function 
                 data-right-sidebar-item
                 data-active={activeItemKey === itemId ? 'true' : undefined}
                 title={item.label}
+                aria-label={
+                  item.badgeCount ? `${item.label} (${item.badgeCount} need review)` : undefined
+                }
                 role={onItemActivate ? 'button' : undefined}
                 onClick={onItemActivate ? (e) => activate(item, sectionIndex, itemIndex, itemId, e) : undefined}
                 onKeyDown={
@@ -165,6 +171,14 @@ export const RightSidebar = forwardRef<HTMLElement, RightSidebarProps>(function 
                   ) : item.icon ? (
                     <Icon name={item.icon} />
                   ) : null}
+                  {item.badgeCount != null && item.badgeCount > 0 && (
+                    <NotificationBadge
+                      type="number"
+                      size="sm"
+                      value={item.badgeCount}
+                      className="right-sidebar__badge"
+                    />
+                  )}
                 </span>
               </a>
             )

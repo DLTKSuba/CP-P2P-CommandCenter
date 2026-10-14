@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState, useSyncExternalStore } from 'react'
 import type { KeyboardEvent } from 'react'
 import { Icon } from './Icon'
 import { Badge } from './Badge'
@@ -78,16 +78,30 @@ function createSeedEntries(): DelaChatHistoryEntry[] {
 /* Kept outside the component so edits and deletes survive closing the panel. */
 let sessionEntries: DelaChatHistoryEntry[] | null = null
 
+const sessionListeners = new Set<() => void>()
+
 function readSessionEntries(): DelaChatHistoryEntry[] {
   if (!sessionEntries) sessionEntries = createSeedEntries()
   return sessionEntries
 }
 
+function writeSessionEntries(next: DelaChatHistoryEntry[]) {
+  sessionEntries = next
+  sessionListeners.forEach((listener) => listener())
+}
+
+function subscribeToSessionEntries(listener: () => void) {
+  sessionListeners.add(listener)
+  return () => {
+    sessionListeners.delete(listener)
+  }
+}
+
 /** Keeps the close-period history tag in sync with the message Dela is showing. */
 export function setCloseRunHistoryStatus(status: DelaChatStatus) {
   const current = readSessionEntries()
-  sessionEntries = current.map((entry) =>
-    entry.status != null ? { ...entry, status } : entry
+  writeSessionEntries(
+    current.map((entry) => (entry.status != null ? { ...entry, status } : entry))
   )
 }
 
@@ -107,6 +121,14 @@ export function readTasksNeedingReview(): DelaChatHistoryEntry[] {
   return readRunningTasks().filter((entry) => entry.status === 'Needs Review')
 }
 
+/** Live count of tasks needing review, for badges outside the Dela panel. */
+export function useTasksNeedingReviewCount(): number {
+  return useSyncExternalStore(
+    subscribeToSessionEntries,
+    () => readTasksNeedingReview().length
+  )
+}
+
 /** Records a close run as running, reusing the chat for the same period if one exists. */
 export function startCloseRun(title: string): string {
   const current = readSessionEntries()
@@ -117,13 +139,13 @@ export function startCloseRun(title: string): string {
     askedOn: new Date(),
     status: 'Running',
   }
-  sessionEntries = [run, ...current.filter((entry) => entry !== existing)]
+  writeSessionEntries([run, ...current.filter((entry) => entry !== existing)])
   return run.id
 }
 
 export function setChatStatus(id: string, status: DelaChatStatus) {
-  sessionEntries = readSessionEntries().map((entry) =>
-    entry.id === id ? { ...entry, status } : entry
+  writeSessionEntries(
+    readSessionEntries().map((entry) => (entry.id === id ? { ...entry, status } : entry))
   )
 }
 
@@ -173,7 +195,7 @@ export function DelaChatHistory({
 
   const commitEntries = useCallback(
     (next: DelaChatHistoryEntry[]) => {
-      sessionEntries = next
+      writeSessionEntries(next)
       setEntries(next)
       onEntriesChange?.()
     },

@@ -7,7 +7,7 @@ import { Dropdown } from './Dropdown'
 import { NotificationBadge } from './NotificationBadge'
 import {
   DelaChatHistory,
-  readTasksNeedingReview,
+  useTasksNeedingReviewCount,
   setChatStatus,
   startCloseRun,
 } from './DelaChatHistory'
@@ -343,7 +343,7 @@ export function DelaPanelContent({
   const periodConfirmation = `Fiscal year ${calendarYear(fiscalYear)}, period ${period} (${
     MONTHS[Number(period) - 1]
   }) is selected for close.`
-  const reviewTaskCount = readTasksNeedingReview().length
+  const reviewTaskCount = useTasksNeedingReviewCount()
   const refreshTasks = useCallback(() => setTasksVersion((version) => version + 1), [])
 
   const startCloseJob = () => {
