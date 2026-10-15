@@ -307,15 +307,21 @@
   outline-offset: 2px;
 }
 
-.command-center-ai-sparkle {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
+.command-center-ai-column-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
 }
 
-/* Sparkle reads white on the filled primary button */
-.command-center-row-actions__primary .command-center-ai-sparkle {
-  filter: brightness(0) invert(1);
+/* AI marker in the Dela brand purple, shaped by the Harmony sparkle */
+.command-center-ai-sparkle {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  background: var(--gradient-dela-start);
+  -webkit-mask: url('/Stars.svg') center / contain no-repeat;
+  mask: url('/Stars.svg') center / contain no-repeat;
 }
 
 /* Fixed so the table's scroll container cannot clip it */
@@ -328,11 +334,6 @@
   background-color: var(--surface-bg);
   box-shadow: var(--shadow-md);
   overflow: hidden;
-}
-
-.command-center-row-actions__menu-layer .list-menu__custom-icon {
-  width: 16px;
-  height: 16px;
 }
 
 /* Requisition detail column (non-modal companion pane) — wider for single-line summary rows */

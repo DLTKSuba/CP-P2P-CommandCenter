@@ -564,7 +564,14 @@ export const REQUISITION_TABLE_HEADER = (
       {commandCenterHeaderTh('Status')}
       {commandCenterHeaderTh('Overdue Lines', 'right')}
       <th className="text-left" scope="col">
-        Action
+        <span className="command-center-ai-column-label">
+          Action
+          <span
+            className="command-center-ai-sparkle"
+            role="img"
+            aria-label="AI processed actions"
+          />
+        </span>
       </th>
     </tr>
   </thead>
@@ -672,7 +679,6 @@ function RequisitionActionCell({
           ariaLabel={`${primaryAction} for ${row.id} (AI processed)`}
           onClick={() => onAction(primaryAction, row)}
         >
-          <img src="/Stars.svg" alt="" className="command-center-ai-sparkle" />
           {primaryAction}
         </Button>
         <button
@@ -689,11 +695,7 @@ function RequisitionActionCell({
           <div className="command-center-row-actions__menu-layer" style={menuPosition}>
             <ListMenu
               variant="no-borders"
-              items={moreActions.map((label) => ({
-                label,
-                isCustom: true,
-                customSrc: '/Stars.svg',
-              }))}
+              items={moreActions.map((label) => ({ label }))}
               onItemClick={(_item, index) => onAction(moreActions[index], row)}
             />
           </div>

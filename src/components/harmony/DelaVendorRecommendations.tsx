@@ -212,12 +212,6 @@ export function DelaVendorRecommendations({
                 />
               </button>
 
-              <span className="dela-vendors__overall-meter" aria-hidden>
-                <span
-                  className="dela-vendors__overall-meter-fill"
-                  style={{ width: `${vendor.overallScore}%` }}
-                />
-              </span>
 
               {isExpanded && (
                 <div className="dela-vendors__detail" id={detailId}>

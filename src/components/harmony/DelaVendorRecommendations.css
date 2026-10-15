@@ -125,7 +125,6 @@
   color: var(--text-muted);
 }
 
-.dela-vendors__overall-meter,
 .dela-vendors__meter {
   position: relative;
   display: block;
@@ -134,11 +133,6 @@
   background-color: var(--border-light);
 }
 
-.dela-vendors__overall-meter {
-  height: 6px;
-}
-
-.dela-vendors__overall-meter-fill,
 .dela-vendors__meter-fill {
   display: block;
   height: 100%;
@@ -164,7 +158,7 @@
   gap: var(--space-2);
 }
 
-/* Card footer: separated from the score bar, link on the left and action on the right */
+/* Card footer: link on the left and action on the right */
 .dela-vendors__actions {
   display: flex;
   align-items: center;
